@@ -4,20 +4,20 @@ import '../restaurant/restaurant_card.dart';
 
 class FavoriteProvider extends ChangeNotifier {
   List<RestaurantCard> _favoriteRestaurants = [];
-  List<RestaurantCard> get words => _favoriteRestaurants;
+  List<RestaurantCard> get favoriteRestaurants => _favoriteRestaurants;
 
-  void toggleFavorite(RestaurantCard word) {
-    final isExist = _favoriteRestaurants.contains(word);
+  void toggleFavorite(RestaurantCard card) {
+    final isExist = _favoriteRestaurants.contains(card);
     if (isExist) {
-      _favoriteRestaurants.remove(word);
+      _favoriteRestaurants.remove(card);
     } else {
-      _favoriteRestaurants.add(word);
+      _favoriteRestaurants.add(card);
     }
     notifyListeners();
   }
 
-  bool isExist(RestaurantCard word) {
-    final isExist = _favoriteRestaurants.contains(word);
+  bool isExist(RestaurantCard card) {
+    final isExist = _favoriteRestaurants.contains(card);
     return isExist;
   }
 

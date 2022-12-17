@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import '../screen/home_page.dart';
 import '../provider/favorite_provider.dart';
+import '../speech/socket_tts.dart';
+import '../speech/sound_player.dart';
 
 class RestaurantCard extends StatefulWidget {
   const RestaurantCard({
@@ -16,8 +19,20 @@ class RestaurantCard extends StatefulWidget {
   @override
   State<RestaurantCard> createState() => _RestaurantCardState();
 }
-
+typedef ColorCallback = void Function(Color color);
 class _RestaurantCardState extends State<RestaurantCard> {
+  final player = SoundPlayer();
+  @override
+  void initState() {
+    super.initState();
+    player.init();
+  }
+
+  @override
+  void dispose() {
+    player.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     final provider = FavoriteProvider.of(context);
@@ -47,6 +62,22 @@ class _RestaurantCardState extends State<RestaurantCard> {
                                   fontSize: 24,
                                 ),
                               ),
+                            ),
+                            IconButton(
+                              icon: const Icon(
+                                Icons.search, // Flutter 內建的搜尋 icon
+                              ),
+                              onPressed: () async {
+                                String strings = widget.title;
+                                // 如果為空則 return
+                                if (strings.isEmpty) return;
+                                // connect to text2speech socket
+                                if (recognitionLanguage == 'Taiwanese') {
+                                  await Text2Speech().connect(play, strings, "taiwanese");
+                                } else {
+                                  await Text2Speech().connect(play, strings, "chinese");
+                                }
+                              },
                             ),
                             IconButton(
                               onPressed: () {
@@ -80,4 +111,13 @@ class _RestaurantCardState extends State<RestaurantCard> {
       ),
     );
   }
+  Future play(String pathToReadAudio) async {
+    await player.play(pathToReadAudio);
+    setState(() {
+      player.init();
+      player.isPlaying;
+    });
+  }
 }
+
+

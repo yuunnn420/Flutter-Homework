@@ -12,7 +12,7 @@ class _FavoritePageState extends State<FavoritePage> {
   @override
   Widget build(BuildContext context) {
     final provider = FavoriteProvider.of(context);
-    final favoriteRestaurants = provider.words;
+    final favoriteRestaurants = provider.favoriteRestaurants;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Favorites'),

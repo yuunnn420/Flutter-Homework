@@ -4,8 +4,6 @@ import '../restaurant/restaurant.dart';
 import '../restaurant/category_model.dart';
 
 import 'dart:io';
-import '../speech/socket_tts.dart';
-import '../speech/sound_player.dart';
 import '../speech/sound_recorder.dart';
 import '../speech/flutter_tts.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
@@ -19,14 +17,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
   String? selectedCategory = 'Taipei';
   String searchString = '';
 
   // get SoundRecorder
   final recorder = SoundRecorder();
-
-  // get soundPlayer
-  final player = SoundPlayer();
 
   // Declare TextEditingController to get the value in TextField
   TextEditingController taiwaneseController = TextEditingController();
@@ -37,13 +33,11 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     recorder.init();
-    player.init();
   }
 
   @override
   void dispose() {
     recorder.dispose();
-    player.dispose();
     super.dispose();
   }
 
@@ -207,44 +201,15 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Future play(String pathToReadAudio) async {
-    await player.play(pathToReadAudio);
-    setState(() {
-      player.init();
-      player.isPlaying;
-    });
-  }
-
   Widget buildOutputField() {
     return Padding(
       padding: const EdgeInsets.only(left: 20, right: 10),
       child: TextField(
         controller: recognitionController, // 設定 controller
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           fillColor: Colors.white, // 背景顏色，必須結合filled: true,才有效
           filled: true, // 重點，必須設定為true，fillColor才有效
-          suffixIcon: IconButton(
-            // TextField 中最後可以選擇放入 Icon
-            icon: const Icon(
-              Icons.search, // Flutter 內建的搜尋 icon
-              color: Colors.grey, // 設定 icon 顏色
-            ),
-            // 當 icon 被點擊時執行的動作
-            onPressed: () async {
-              // 得到 TextField 中輸入的 value
-              String strings = recognitionController.text;
-              // 如果為空則 return
-              if (strings.isEmpty) return;
-              // connect to text2speech socket
-              if (recognitionLanguage == 'Taiwanese') {
-                await Text2Speech().connect(play, strings, "taiwanese");
-              } else {
-                await Text2Speech().connect(play, strings, "chinese");
-              }
-            },
-          ),
         ),
-
         onChanged: (value) {
           setState(() {
             searchString = value;
@@ -253,9 +218,6 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
-  // Use to choose language of speech recognition
-  String recognitionLanguage = "Taiwanese";
 
   Widget buildRadio() {
     return Row(children: <Widget>[
@@ -301,7 +263,7 @@ class _HomePageState extends State<HomePage> {
           activeColor: Colors.red,
           onChanged: (value) {
             setState(() {
-              // 將 recognitionLanguage 設為 Taiwanese
+              // 將 recognitionLanguage 設為 Chinese
               recognitionLanguage = "Chinese";
             });
           },
@@ -310,3 +272,6 @@ class _HomePageState extends State<HomePage> {
     ]);
   }
 }
+
+// Use to choose language of speech recognition
+String recognitionLanguage = "Taiwanese";
