@@ -15,7 +15,7 @@ class _FavoritePageState extends State<FavoritePage> {
     final favoriteRestaurants = provider.favoriteRestaurants;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Favorites'),
+        title: const Text('Favorites', style: TextStyle(fontSize: 30)),
       ),
       body: favoriteRestaurants.isEmpty
           ? const Center(
