@@ -7,11 +7,13 @@ import '../speech/sound_player.dart';
 class RestaurantCard extends StatefulWidget {
   const RestaurantCard({
     Key? key,
+    required this.id,
     required this.imagePath,
     required this.title,
     required this.plot,
   }) : super(key: key);
 
+  final String id;
   final String imagePath;
   final String title;
   final String plot;
@@ -19,9 +21,12 @@ class RestaurantCard extends StatefulWidget {
   @override
   State<RestaurantCard> createState() => _RestaurantCardState();
 }
+
 typedef ColorCallback = void Function(Color color);
+
 class _RestaurantCardState extends State<RestaurantCard> {
   final player = SoundPlayer();
+
   @override
   void initState() {
     super.initState();
@@ -33,6 +38,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
     player.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     final provider = FavoriteProvider.of(context);
@@ -73,18 +79,21 @@ class _RestaurantCardState extends State<RestaurantCard> {
                                 if (strings.isEmpty) return;
                                 // connect to text2speech socket
                                 if (recognitionLanguage == 'Taiwanese') {
-                                  await Text2Speech().connect(play, strings, "taiwanese");
+                                  await Text2Speech()
+                                      .connect(play, strings, "taiwanese");
                                 } else {
-                                  await Text2Speech().connect(play, strings, "chinese");
+                                  await Text2Speech()
+                                      .connect(play, strings, "chinese");
                                 }
                               },
                             ),
                             IconButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 provider.toggleFavorite(widget);
                               },
                               icon: provider.isExist(widget)
-                                  ? const Icon(Icons.favorite, color: Colors.red)
+                                  ? const Icon(Icons.favorite,
+                                      color: Colors.red)
                                   : const Icon(Icons.favorite_border),
                             ),
                           ],
@@ -111,6 +120,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
       ),
     );
   }
+
   Future play(String pathToReadAudio) async {
     await player.play(pathToReadAudio);
     setState(() {
@@ -119,5 +129,3 @@ class _RestaurantCardState extends State<RestaurantCard> {
     });
   }
 }
-
-

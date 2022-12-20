@@ -5,7 +5,6 @@ import '../restaurant/category_model.dart';
 
 import 'dart:io';
 import '../speech/sound_recorder.dart';
-import '../speech/flutter_tts.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import '../speech/socket_stt.dart';
 
@@ -16,10 +15,17 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+String? selectedCategory = 'Taipei';
+String recognitionLanguage = "Taiwanese";
 
-  String? selectedCategory = 'Taipei';
+class _HomePageState extends State<HomePage> {
   String searchString = '';
+  List<String> locations = ['Taipei', 'Chiayi', 'Hwalian', 'Tainan', 'Bangkok'];
+  late final Future taipeiFuture,
+      chiayiFuture,
+      hwalianFuture,
+      tainanFuture,
+      bangkokFuture;
 
   // get SoundRecorder
   final recorder = SoundRecorder();
@@ -29,10 +35,28 @@ class _HomePageState extends State<HomePage> {
   TextEditingController chineseController = TextEditingController();
   TextEditingController recognitionController = TextEditingController();
 
+  Future getFuture(String? selectedCategory) {
+    if (selectedCategory == 'Taipei')
+      return taipeiFuture;
+    else if (selectedCategory == 'Chiayi')
+      return chiayiFuture;
+    else if (selectedCategory == 'Hwalian')
+      return hwalianFuture;
+    else if (selectedCategory == 'Tainan')
+      return tainanFuture;
+    else
+      return bangkokFuture;
+  }
+
   @override
   void initState() {
     super.initState();
     recorder.init();
+    taipeiFuture = CategoryModel.getRestaurant('Taipei');
+    chiayiFuture = CategoryModel.getRestaurant('Chiayi');
+    hwalianFuture = CategoryModel.getRestaurant('Hwalian');
+    tainanFuture = CategoryModel.getRestaurant('Tainan');
+    bangkokFuture = CategoryModel.getRestaurant('Bangkok');
   }
 
   @override
@@ -103,7 +127,7 @@ class _HomePageState extends State<HomePage> {
                 ],
               )),
           FutureBuilder(
-              future: CategoryModel.getRestaurant(selectedCategory),
+              future: getFuture(selectedCategory),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   final restaurants = snapshot.data as List<Restaurant>;
@@ -116,6 +140,7 @@ class _HomePageState extends State<HomePage> {
                               .title
                               .contains(searchString)
                           ? RestaurantCard(
+                              id: restaurants.elementAt(index).id,
                               imagePath: restaurants.elementAt(index).imagePath,
                               title: restaurants.elementAt(index).title,
                               plot: restaurants.elementAt(index).title,
@@ -272,6 +297,3 @@ class _HomePageState extends State<HomePage> {
     ]);
   }
 }
-
-// Use to choose language of speech recognition
-String recognitionLanguage = "Taiwanese";
